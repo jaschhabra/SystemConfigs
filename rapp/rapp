@@ -1,0 +1,145 @@
+#!/bin/bash
+EXPECTED_ARGS=2
+E_BADARGS=65
+# set RAPP_HOME to rapp directory if it if different from ~/bin
+#RAPP_HOME= 
+
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "Usage: rapp app-name "My app title" [theme]"
+  exit $E_BADARGS
+fi
+rails new $1  -T  # create a new rails app without tests
+cd $1
+# create a git repositary for the new app
+git init
+git add .
+git commit -am "initial commit"
+
+# change gem file
+
+echo "gem 'haml'" >> Gemfile
+echo "gem 'devise' " >> Gemfile
+echo "gem 'kaminari' " >> Gemfile
+
+ 
+echo "group :development, :test do " >> Gemfile
+echo "#  gem 'capybara' " >> Gemfile
+echo "   gem 'rspec-rails' " >> Gemfile
+echo "   gem 'haml-rails' " >> Gemfile
+echo "   gem 'hpricot' " >> Gemfile
+echo "   gem 'ruby_parser' " >> Gemfile
+echo "   gem 'web-app-theme' " >> Gemfile
+echo " end " >> Gemfile
+
+bundle install
+# create basic static pages using a pages controller
+rails g controller pages home about 
+# change routes
+rm public/index.html
+head -n 1 config/routes.rb >  config/routes.rb.tmp
+echo "   root :to => 'pages#home' " >> config/routes.rb.tmp
+echo "   match 'about' => 'pages#about'" >> config/routes.rb.tmp
+tail -n +2 config/routes.rb  >> config/routes.rb.tmp
+mv config/routes.rb.tmp   config/routes.rb
+rake db:create
+# add title helper to application helpers
+head -n 1 app/helpers/application_helper.rb >  app/helpers/application_helper.rb.temp
+echo "def title" >>  app/helpers/application_helper.rb.temp
+echo "  base_title = \"$2\" " >>  app/helpers/application_helper.rb.temp
+echo "  if @title.nil?" >>  app/helpers/application_helper.rb.temp
+echo "    base_title" >>  app/helpers/application_helper.rb.temp
+echo "  else" >>  app/helpers/application_helper.rb.temp
+echo "    \"#{base_title} | #{@title}\"" >>  app/helpers/application_helper.rb.temp
+echo "  end" >>  app/helpers/application_helper.rb.temp
+echo "end" >>  app/helpers/application_helper.rb.temp
+tail -n +2 app/helpers/application_helper.rb  >>  app/helpers/application_helper.rb.temp
+mv  app/helpers/application_helper.rb.temp  app/helpers/application_helper.rb 
+# generate a web-app-theme using hal engine
+if [ $# -eq  3 ] ; then
+rails g web_app_theme:theme --theme="$3" --engine=haml   --app-name="#{title}"
+else
+rails g web_app_theme:theme --theme="djime-cerulean"  --engine=haml  --app-name="#{title}"
+fi
+rm app/views/layouts/application.html.erb
+# Generate a smaple home page
+rails g web_app_theme:themed pages --themed-type=text --engine=haml
+mv app/views/pages/show.html.haml app/views/pages/home.html.haml
+
+rails g web_app_theme:assets
+replace ":defaults, :cache => true" "'application'" -- app/views/layouts/application.html.haml
+replace ".flash .error, .flash .error-list {" ".flash .error, .flash .error-list, .flash .alert {" -- app/assets/stylesheets/web-app-theme/themes/default/style.css
+cp -r $(bundle show web-app-theme)/spec/dummy/public/images/* app/assets/images/web-app-theme/themes/default/images 
+# add devise support
+rails generate devise:install
+rails generate devise User
+replace "# config.scoped_views = false" "config.scoped_views = true" -- config/initializers/devise.rb
+# Add sign layout for use by devise
+if [ $# -eq  3 ] ; then
+rails g web_app_theme:theme sign --layout-type=sign --theme=$3 --engine=haml  --app-name="#{title}"
+else
+rails g web_app_theme:theme sign --layout-type=sign --theme="djime-cerulean" --engine=haml   --app-name="#{title}"
+fi
+# Change application.rb to add devise specific config to use the sign layout
+nlines=`wc -l config/application.rb | cut -c 1-9`
+skiplines=2
+head -n $((nlines-skiplines))  config/application.rb  > config/application.rb.tmp
+echo "    config.action_mailer.default_url_options = { :host => 'localhost:3000' }" >> config/application.rb.tmp
+echo "    config.to_prepare do" >> config/application.rb.tmp
+echo "      Devise::SessionsController.layout \"sign\" " >> config/application.rb.tmp
+echo "      Devise::RegistrationsController.layout \"sign\" " >> config/application.rb.tmp
+echo "      Devise::PasswordsController.layout \"sign\" " >> config/application.rb.tmp
+echo "    end" >> config/application.rb.tmp
+tail -n $skiplines config/application.rb  >> config/application.rb.tmp
+mv config/application.rb.tmp config/application.rb
+
+rails generate devise:views 
+# convert all erb files to haml
+cd app/views/devise
+for i in *
+do
+  cd $i
+  for j in *
+  do
+    var1=$(echo $j | sed s/erb/haml/)
+    html2haml $j $var1
+    rm $j
+  done
+cd ..
+done
+cd ../../../
+
+
+
+rake db:migrate
+exit
+# copy the new replacement devise views
+if [ -e "#RAPP_HOME" ]; then 
+  cp $RAPP_HOME/bin/rapp-files/confirmations-new.html.haml app/views/devise/confirmations/new.html.haml 
+  cp $RAPP_HOME/bin/rapp-files/passwords-edit.html.haml app/views/devise/passwords/edit.html.haml 
+  cp $RAPP_HOME/bin/rapp-files/passwords-new.html.haml app/views/devise/passwords/new.html.haml 
+  cp $RAPP_HOME/bin/rapp-files/registrations-edit.html.haml app/views/devise/registrations/edit.html.haml 
+  cp $RAPP_HOME/bin/rapp-files/registrations-new.html.haml app/views/devise/registrations/new.html.haml 
+  cp $RAPP_HOME/bin/rapp-files/sessions-new.html.haml app/views/devise/sessions/new.html.haml 
+  cp $RAPP_HOME/bin/rapp-files/unlocks-new.html.haml app/views/devise/unlocks/new.html.haml 
+  cp $RAPP_HOME/bin/rapp-files/logo.png public/images/logo.png
+  cp $RAPP_HOME/bin/rapp-files/devise_helper.rb app/helpers/devise_helper.rb
+  cp $RAPP_HOME/bin/rapp-files/application.html.haml app/views/layouts/application.html.haml
+  cp $RAPP_HOME/bin/rapp-files/sign.html.haml app/views/layouts/sign.html.haml
+else
+  cp ~/bin/rapp-files/confirmations-new.html.haml app/views/devise/confirmations/new.html.haml 
+  cp ~/bin/rapp-files/passwords-edit.html.haml app/views/devise/passwords/edit.html.haml 
+  cp ~/bin/rapp-files/passwords-new.html.haml app/views/devise/passwords/new.html.haml 
+  cp ~/bin/rapp-files/registrations-edit.html.haml app/views/devise/registrations/edit.html.haml 
+  cp ~/bin/rapp-files/registrations-new.html.haml app/views/devise/registrations/new.html.haml 
+  cp ~/bin/rapp-files/sessions-new.html.haml app/views/devise/sessions/new.html.haml 
+  cp ~/bin/rapp-files/unlocks-new.html.haml app/views/devise/unlocks/new.html.haml 
+  cp ~/bin/rapp-files/logo.png public/images/logo.png
+  cp ~/bin/rapp-files/devise_helper.rb app/helpers/devise_helper.rb
+  cp ~/bin/rapp-files/application.html.haml app/views/layouts/application.html.haml
+  cp ~/bin/rapp-files/sign.html.haml app/views/layouts/sign.html.haml
+fi
+# Check in generated app
+git add .
+git commit -am "app generated"
+

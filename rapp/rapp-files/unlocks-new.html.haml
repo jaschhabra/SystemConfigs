@@ -1,0 +1,20 @@
+%h1 
+  %a= link_to image_tag("logo.png", :alt => "Logo")+"#{title}" , root_url
+.block#block-login
+  %h2 Resend unlock instructions
+  .content.login
+    - devise_error_messages!
+    .flash
+      - flash.each do |type, message|
+        %div{ :class => "message #{type}" }
+          %p= message
+    = form_for(resource, :as => resource_name, :url => unlock_path(resource_name), :html => { :method => :post, :class => "form login" }) do |f|
+      .group.wat-cf
+        .left= f.label :email, :class => "label right"
+        .right= f.email_field :email, :class => "text_field"
+      .group.wat-cf
+        .right
+          %button.button{ :type => "submit" }
+            = image_tag "web-app-theme/icons/tick.png"
+            Resend unlock instructions
+      = render :partial => "devise/shared/links"

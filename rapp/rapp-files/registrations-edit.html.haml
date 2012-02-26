@@ -1,0 +1,37 @@
+%h1 
+  %a= link_to image_tag("logo.png", :alt => "Logo")+"#{title}" , root_url
+.block#block-signup
+  %h2
+    Edit #{resource_name.to_s.humanize}
+  .content
+    - devise_error_messages!
+    .flash
+      - flash.each do |type, message|
+        %div{ :class => "message #{type}" }
+          %p= message.html_safe
+    = form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :method => :put , :class => "form" }) do |f|
+      .group.wat-cf
+        .left= f.label :email, :class => "label right"
+        .right= f.email_field :email, :class => "text_field"
+      .group.wat-cf
+        .left= f.label :password, :class => "label right"
+        .right
+          = f.password_field :password, :class => "text_field"
+          %span.description leave blank if you don't want to change it
+      .group.wat-cf
+        .left= f.label :password_confirmation, :class => "label right"
+        .right= f.password_field :password_confirmation, :class => "text_field"
+      .group.wat-cf
+        .left= f.label :current_password, :class => "label right"
+        .right
+          = f.password_field :current_password, :class => "text_field"
+          %span.description we need your current password to confirm your changes
+      .group.navform.wat-cf
+        .right
+          %button.button{ :type => "submit" }
+            = image_tag "web-app-theme/icons/tick.png"
+            Update
+    %h3 Cancel my account
+    %p
+      Unhappy? #{link_to "Cancel my account", registration_path(resource_name), :confirm => "Are you sure?", :method => :delete}.
+    = link_to "Back", :back
