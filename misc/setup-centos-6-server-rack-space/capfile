@@ -1,0 +1,70 @@
+default_run_options[:pty] = true
+role :rootserver, 'root@app.42techies.com'
+role :myserver, 'jasmeetc@app.42techies.com'
+set :myusername , 'jasmeetc'
+
+task :setup_main_user, :roles => :rootserver do
+  run " adduser #{myusername}"
+  run "echo ' #{myusername}   ALL=(ALL)    NOPASSWD: ALL ' >> /etc/sudoers"
+  upload("./#{myusername}.pub", "/tmp", :via => :scp) 
+  run "mkdir /home/#{myusername}/.ssh; cat ~/id_rsa.pub > /home/#{myusername}/.ssh/authorized_keys;"
+  run "chown -R #{myusername}.#{myusername} /home/#{myusername}/.ssh; chmod 700 /home/#{myusername}/.ssh"
+  run "chmod 600 /home/#{myusername}/.ssh/authorized_keys"
+end
+
+task :lockdown_ssh, :roles => :rootserver do
+  run 'echo "DenyUsers root" >> /etc/ssh/sshd_config'
+  run 'service sshd restart'
+end
+task :install_base_packages, :roles => :myserver do
+  run 'sudo yum -y groupinstall "Development Tools"'
+  run 'sudo yum -y install zlib zlib-devel curl-devel openssl-devel httpd-devel apr-devel apr-util-devel sqlite-devel mysql-devel'
+  run 'sudo yum -y install libxslt-devel libxml-devel'
+  run 'sudo yum -y update'
+end
+task :setup_ntp, :roles =>:myserver do
+  run 'sudo yum -y install ntp'
+  run 'sudo chkconfig ntpd on'
+  run 'sudo service ntpd start'
+end
+task :setup_rails, :roles => :myserver do
+  run "sudo yum -y install ruby ruby-devel rubygems"
+  run "sudo gem update --system"
+  run "sudo gem install rails --no-ri --no-rdoc"
+  run "sudo gem install bundle --no-ri --no-rdoc"
+end
+
+task :install_misc_packages, :roles => :myserver do
+  run "sudo yum -y  install nmap"
+  # QR code related packages
+  run "sudo yum -y install libpng libpng-devel"
+  qrdir = "/tmp/libqrinstall#{Time.now.to_i}"
+  qrpackage = "qrencode-3.2.0"
+  run "mkdir -p #{qrdir}"
+  upload("libs/#{qrpackage}.tar.gz",qrdir, :via => :scp)
+  run "cd #{qrdir}; tar zxvf #{qrpackage}.tar.gz ; rm #{qrpackage}.tar.gz; "
+  run "cd #{qrdir}/#{qrpackage} ; ./configure --libdir=/usr/lib64; make; sudo make install"
+  run "rm -rf #{qrdir}"
+  # Cairo needed for SVG
+  run "sudo yum -y install cairo-devel"
+end
+
+
+
+task :setup_server, :roles => :myserver do
+  setup_main_user
+  lockdown_ssh
+  install_base_packages
+  setup_ntp
+  setup_rails
+  install_misc_packages
+
+end
+
+task :mytest, :roles => :myserver do
+end
+
+
+
+
+

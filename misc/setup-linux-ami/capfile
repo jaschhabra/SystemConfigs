@@ -1,0 +1,59 @@
+# To run use cap command -S server_name='name'
+default_run_options[:pty] = true
+set :user, 'ec2-user'
+role :myserver, server_name
+set :myusername , 'jasmeetc'
+
+task :update_system, :roles => :myserver do
+  run 'sudo yum -y update'
+end
+task :install_base_packages, :roles => :myserver do
+  run 'sudo yum -y groupinstall "Development Tools"'
+  run 'sudo yum -y install zlib zlib-devel curl-devel openssl-devel httpd-devel apr-devel apr-util-devel sqlite-devel mysql-devel'
+  run 'sudo yum -y install libxslt-devel libxml-devel'
+end
+task :setup_ntp, :roles =>:myserver do
+  run 'sudo yum -y install ntp'
+  run 'sudo chkconfig ntpd on'
+  run 'sudo service ntpd start'
+end
+task :setup_rails, :roles => :myserver do
+  run "sudo yum -y install ruby ruby-devel rubygems"
+  run "sudo gem update --system"
+  run "sudo gem install rails --no-ri --no-rdoc"
+  run "sudo gem install bundle --no-ri --no-rdoc"
+end
+
+task :install_misc_packages, :roles => :myserver do
+  run "sudo yum -y  install nmap"
+  # QR code related packages
+  run "sudo yum -y install libpng libpng-devel"
+  qrdir = "/tmp/libqrinstall#{Time.now.to_i}"
+  qrpackage = "qrencode-3.2.0"
+  run "mkdir -p #{qrdir}"
+  upload("libs/#{qrpackage}.tar.gz",qrdir, :via => :scp)
+  run "cd #{qrdir}; tar zxvf #{qrpackage}.tar.gz ; rm #{qrpackage}.tar.gz; "
+  run "cd #{qrdir}/#{qrpackage} ; ./configure --libdir=/usr/lib64; make; sudo make install"
+  run "rm -rf #{qrdir}"
+  # Right_AWS gem for controlling AWS. It  may not be needed generally
+  run "sudo gem install right_aws --no-ri --no-rdoc"
+end
+
+
+
+task :setup_server, :roles => :myserver do
+  update_system
+  install_base_packages
+  setup_ntp
+  setup_rails
+  install_misc_packages
+
+end
+
+task :mytest, :roles => :myserver do
+end
+
+
+
+
+
