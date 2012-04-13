@@ -1,0 +1,26 @@
+0. Install following prerequisites
+   sudo port -v selfupdate
+   sudo port install nodejs
+   sudo port install npm
+   sudo npm install -g jshint
+0.2 Delete directories linked in setup
+0.3 Re-install Package control if it does not show up.
+1. Run Setup (on a MAC)
+
+____ That should be all. But in case you need to recreate setup, follow instructions below_____
+2. Install package Control http://wbond.net/sublime_packages/package_control/installation
+3.Edit the ignored_packages setting, changing it from: "ignored_packages": ["Vintage"] to: "ignored_packages": [] now save the file.file and restart
+4. Using Package control commands install following packsages:
+   ZenCoding, jquery, 
+   jshint (first installl prerqs at https://github.com/uipoet/sublime-jshint)
+   sublime linter
+   alignment
+  clipboard history
+   sublime repl
+    detect syntax
+   sublime code intel
+   bracket highliter
+   search stack overflow
+   git
+   
+
