@@ -1,8 +1,15 @@
 # To run use cap command -S server_name='name'
 default_run_options[:pty] = true
-set :user, 'ec2-user'
-role :myserver, server_name
-set :myusername , 'jasmeetc'
+if (defined? server_name).nil?
+  set :server_name, "localhost"
+  ssh_options[:port] = 2222
+  ssh_options[:keys] = "/Users/jasmeetc/.rvm/gems/ruby-1.9.2-p290/gems/vagrant-0.9.4/keys/vagrant"
+  set :user, "vagrant"
+else
+  set :user, 'ec2-user'
+  set :myusername , 'jasmeetc'
+end
+  role :myserver, server_name
 
 task :update_system, :roles => :myserver do
   run 'sudo yum -y update'
@@ -36,7 +43,8 @@ task :install_misc_packages, :roles => :myserver do
   run "cd #{qrdir}/#{qrpackage} ; ./configure --libdir=/usr/lib64; make; sudo make install"
   run "rm -rf #{qrdir}"
   # Right_AWS gem for controlling AWS. It  may not be needed generally
-  run "sudo gem install right_aws --no-ri --no-rdoc"
+  #run "sudo gem install right_aws --no-ri --no-rdoc"
+  
 end
 
 
@@ -51,6 +59,7 @@ task :setup_server, :roles => :myserver do
 end
 
 task :mytest, :roles => :myserver do
+   run "sudo yum -y install git-all"
 end
 
 
