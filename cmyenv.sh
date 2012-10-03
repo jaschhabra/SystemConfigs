@@ -14,5 +14,3 @@ fi
 ln -s $PWD/vim ~/.vim
 ln -s $PWD/vimrc ~/.vimrc
 ln -s $PWD/gvimrc ~/.gvimrc
-ln -s $PWD/rapp/rapp ~/bin/rapp
-ln -s $PWD/rapp/rapp-files ~/bin/rapp-files
