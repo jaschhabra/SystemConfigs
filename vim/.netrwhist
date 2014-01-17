@@ -1,5 +1,8 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =3
+let g:netrw_dirhist_cnt =6
 let g:netrw_dirhist_1='/Users/jasmeetc/bin'
 let g:netrw_dirhist_2='/Users/jasmeetc'
 let g:netrw_dirhist_3='/Users/jasmeetc/work/s3utils/lib/s3utils'
+let g:netrw_dirhist_4='/Users/jasmeetc/bin'
+let g:netrw_dirhist_5='/Users/jasmeetc/.electrum/certs'
+let g:netrw_dirhist_6='/Users/jasmeetc/work/elasticdefense/source/_includes/post'
