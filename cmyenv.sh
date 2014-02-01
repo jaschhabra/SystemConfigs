@@ -11,6 +11,10 @@ else
 	echo "Sorry. Please run the command from the directory it is in, or provide the basedir. as argument"
 	exit 1
 fi
+# take backups
+mkdir -p ~/backups
+mv ~/.vim ~/.vimrc ~/.gvimrc ~/.zshrc ~/.bashrc ~/backups
+#link new files
 ln -s $PWD/vim ~/.vim
 ln -s $PWD/vimrc ~/.vimrc
 ln -s $PWD/gvimrc ~/.gvimrc
