@@ -14,3 +14,6 @@ fi
 ln -s $PWD/vim ~/.vim
 ln -s $PWD/vimrc ~/.vimrc
 ln -s $PWD/gvimrc ~/.gvimrc
+ln -s $PWD/zshrc ~/.zshrc
+ln -s $PWD/zprofile ~/.zprofile
+curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
