@@ -7,7 +7,7 @@
 # Finished adapting your PATH environment variable for use with MacPorts.
 
 #export CC=gcc-4.2
-export PATH=/usr/local/bin:$PATH:/Users/jasmeetc/bin
+export PATH=/usr/local/bin:$PATH:$HOME/bin
 export NEW_RELIC_LICENSE_KEY=a7ad96b72f34b3b146359e76c967cf00744e5041
 
 if [ -r ~/.profile ]; then . ~/.profile; fi
