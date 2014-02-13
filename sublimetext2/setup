@@ -1,7 +1,5 @@
 ln -s "/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl" ~/bin/subl
 echo "subl -ab \$*" > ~/bin/sbl
 chmod +x ~/bin/sbl
-ln -s ~/work/SystemConfigs/sublimetext2/Installed\Packages  ~/Library/Application\ Support/Sublime\ Text\ 2/Installed\ Packages
-ln -s ~/work/SystemConfigs/sublimetext2/Pristine\ Packages  ~/Library/Application\ Support/Sublime\ Text\ 2/Pristine\ Packages
 ln -s ~/work/SystemConfigs/sublimetext2/Packages  ~/Library/Application\ Support/Sublime\ Text\ 2/Packages
 
