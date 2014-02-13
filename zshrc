@@ -66,4 +66,4 @@ export PATH="/Users/jasmeetc/.rvm/gems/ruby-2.0.0-p247@r2/bin:/Users/jasmeetc/.r
 
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
-
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
