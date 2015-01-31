@@ -1,5 +1,5 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =7
+let g:netrw_dirhist_cnt =8
 let g:netrw_dirhist_1='/Users/jasmeetc/bin'
 let g:netrw_dirhist_2='/Users/jasmeetc'
 let g:netrw_dirhist_3='/Users/jasmeetc/work/s3utils/lib/s3utils'
@@ -7,3 +7,4 @@ let g:netrw_dirhist_4='/Users/jasmeetc/bin'
 let g:netrw_dirhist_5='/Users/jasmeetc/.electrum/certs'
 let g:netrw_dirhist_6='/Users/jasmeetc/work/elasticdefense/source/_includes/post'
 let g:netrw_dirhist_7='/Users/jasmeetc/work/SystemConfigs'
+let g:netrw_dirhist_8='/Users/jchhabra/work/yap/ios_macos_trunk_2_0/client/pabeLib/docs'
