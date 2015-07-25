@@ -42,6 +42,7 @@ ZSH_THEME="robbyrussell"
 # yyyy-mm-dd
 # HIST_STAMPS="mm/dd/yyyy"
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/Users/jchhabra/bin:$PATH
+export PATH=$PATH:/usr/texbin
 export WORKON_HOME=~/.virtualenvs
 source /usr/local/bin/virtualenvwrapper.sh
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
